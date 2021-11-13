@@ -4,9 +4,9 @@ We will be beginning development of a [fantasy console](https://en.wikipedia.org
 
 ### Group
 
-Allison Turner
-Joey Rudek
-Mark Barbone
+Allison Turner  
+Joey Rudek  
+Mark Barbone  
 James Yuan
 
 ### Project roadmap
