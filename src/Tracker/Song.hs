@@ -42,3 +42,6 @@ $(deriveJSON defaultOptions ''Note)
 $(deriveJSON defaultOptions ''Song)
 
 
+exampleSong :: Song
+exampleSong = Song [] curr next
+  where curr:next = map Note [D,E,F,G,E,E,C,D]
