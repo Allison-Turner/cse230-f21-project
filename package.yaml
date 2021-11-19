@@ -23,6 +23,7 @@ dependencies:
 - base >= 4.7 && < 5
 - brick
 - vty
+- aeson
 
 library:
   source-dirs: src
