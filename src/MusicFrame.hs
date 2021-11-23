@@ -53,7 +53,6 @@ drawNote n =
 
 drawStaff :: Widget ()
 drawStaff = 
-    padAll 2 $
     vBox [ hBorder 
          , hCenter $ hBox $ map (hCenter . str . show) [minBound..maxBound :: Pitch] ]
 
