@@ -29,3 +29,9 @@ Creating a fantasy console is, admittedly, very ambitious! (That's probably why 
 2. for playing music, [sdl2-mixer](https://hackage.haskell.org/package/sdl2-mixer), and for reading/writing midi files (and other related formats), [HCodecs](https://hackage.haskell.org/package/HCodecs).
 3. for graphics editing, brick seems to provide everything.
 4. for game code editing, [brick-skylighting](https://hackage.haskell.org/package/brick-skylighting) provides syntax highlighting. If we want to embed lua, [lua](https://hackage.haskell.org/package/hslua).
+
+## dev notes
+```
+stack build
+stack exec cse230-f21-project-exe
+```

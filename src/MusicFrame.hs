@@ -38,12 +38,13 @@ equals = "="
 drawSong :: Song -> Widget ()
 drawSong song = drawPattern song <=> drawStaff
 
-
-
 drawPattern :: Song -> Widget ()
-drawPattern s =
+drawPattern s = (vBox (map drawNote (prevNotes s))) <=> drawNote (currentNote s) <=> (vBox (map drawNote (nextNotes s)))
+
+drawNote :: Note -> Widget ()
+drawNote n =
     let totalLines = 1 + fromEnum (maxBound :: Pitch)
-    in hCenter $ hBox $ map (hCenter . str) $ case currentNote s of
+    in hCenter $ hBox $ map (hCenter . str) $ case n of
         Note pitch ->
             let idx = fromEnum pitch
             in replicate idx pipe ++ [show pitch] ++ replicate (totalLines - idx - 1) pipe
