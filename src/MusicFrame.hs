@@ -67,7 +67,7 @@ drawNote n =
 
 -- | Draw each Note that makes up a Song in order
 drawPattern :: Song -> Widget ()
-drawPattern s = (vBox (map drawNote (prevNotes s)) & withAttr prevNotesAttr) <=> (drawNote (currentNote s) & withAttr currentNoteAttr) <=> (vBox (map drawNote (nextNotes s)) & withAttr nextNotesAttr)
+drawPattern s = (vBox (map drawNote (reverse (prevNotes s))) & withAttr prevNotesAttr) <=> (drawNote (currentNote s) & withAttr currentNoteAttr) <=> (vBox (map drawNote (nextNotes s)) & withAttr nextNotesAttr)
 
 -- | Draw a "staff" that consists of a column for each Note. 
 -- | Progression upwards through the column represents the passage of Beats (musical time)
