@@ -28,29 +28,29 @@ type Name = ()
 -- | sort of like adding a CSS class to an HTML element, so any CSS rules for that class are applied to it. this is the list of CSS classes
 currentNoteAttr, prevNotesAttr, nextNotesAttr, pitchAttr, restAttr, staffAttr :: AttrName
 currentNoteAttr = attrName "currentNoteAttr"
-prevNotesAttr = attrName "prevNotesAttr"
-nextNotesAttr = attrName "nextNotesAttr"
-pitchAttr = attrName "pitchAttr"
-restAttr = attrName "restAttr"
-staffAttr = attrName "staffAttr"
+prevNotesAttr   = attrName "prevNotesAttr"
+nextNotesAttr   = attrName "nextNotesAttr"
+pitchAttr       = attrName "pitchAttr"
+restAttr        = attrName "restAttr"
+staffAttr       = attrName "staffAttr"
 
 -- | Color macros for convenience
 red, orange, yellow, green, blue, purple, pink, black, grey, white :: Color
-red = V.rgbColor 255 0 0
+red    = V.rgbColor 255 0 0
 orange = V.rgbColor 255 128 0
 yellow = V.rgbColor 255 255 0
-green = V.rgbColor 0 255 0
-blue = V.rgbColor 0 0 255
+green  = V.rgbColor 0 255 0
+blue   = V.rgbColor 0 0 255
 purple = V.rgbColor 128 0 255
-pink = V.rgbColor 255 0 191
-black = V.rgbColor 0 0 0
-grey = V.rgbColor 80 50 50
-white = V.rgbColor 255 255 255
+pink   = V.rgbColor 255 0 191
+black  = V.rgbColor 0 0 0
+grey   = V.rgbColor 80 50 50
+white  = V.rgbColor 255 255 255
 
 -- | Usefully shaped characters
 square, pipe, equals :: String 
 square = "\2588"
-pipe = "|"
+pipe   = "|"
 equals = "="
 
 
