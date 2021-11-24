@@ -87,17 +87,21 @@ attributeMap _ = attrMap V.defAttr [
          (currentNoteAttr, MusicFrame.yellow `Brick.on` MusicFrame.grey `V.withStyle` V.bold)
        , (prevNotesAttr, MusicFrame.green `Brick.on` MusicFrame.grey)
        , (nextNotesAttr, MusicFrame.orange `Brick.on` MusicFrame.grey)
-       , (staffAttr, MusicFrame.white`Brick.on` MusicFrame.grey)]
+       , (staffAttr, fg MusicFrame.white)]
 
+-- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
 handleEvent song (AppEvent Beat) = step song
 handleEvent song _               = continue song
 
+-- | Advance through Song until none left, then halt
 step :: Song -> EventM Name (Next Song)
 step s = let s1 = forwardOneNote s in case s1 of
        Nothing -> halt s
        Just s1 -> continue s1
 
+-- | this is where we point the UI at the Song that we want to display
+-- | TODO: plug in real control structures for file system and terminal input
 initSong :: IO Song
 initSong = return exampleSong 
 
@@ -116,7 +120,7 @@ musicFrame = do
   chan <- newBChan 10
   forkIO $ forever $ do
     writeBChan chan Beat
-    threadDelay 1000000 -- decides how fast your game moves
+    threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
   s <- initSong
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
