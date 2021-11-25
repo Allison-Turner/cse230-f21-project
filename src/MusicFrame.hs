@@ -136,11 +136,18 @@ editSong s _ = s
 
 toPitch :: Char -> Pitch
 toPitch 'c' = C
+toPitch 'C' = C
 toPitch 'd' = D
+toPitch 'D' = D
 toPitch 'e' = E
+toPitch 'E' = E
 toPitch 'f' = F
+toPitch 'F' = F
 toPitch 'g' = G
+toPitch 'G' = G
 toPitch 'a' = A
+toPitch 'A' = A
 toPitch 'b' = B
---toPitch 'C' = C'
-toPitch _   = C' -- for now
+toPitch 'B' = B
+--toPitch 'c' = C'
+toPitch _   = C' -- for now, in the future can possibly use capital 'C' for C and lower case 'c' for C'
