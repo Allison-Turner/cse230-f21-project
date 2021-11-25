@@ -13,6 +13,7 @@ import Brick.Widgets.Border(hBorder)
 import qualified Brick.Widgets.Center(hCenter)
 import Brick.Widgets.Center (hCenter)
 import Brick.BChan (newBChan, writeBChan)
+import Brick.Types
 
 import Graphics.Vty as V
 
@@ -92,6 +93,7 @@ attributeMap _ = attrMap V.defAttr [
 -- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
 handleEvent song (AppEvent Beat) = step song
+handleEvent song e@(VtyEvent (EvKey (KChar c) [])) = continue (editSong song e) 
 handleEvent song _               = continue song
 
 -- | Advance through Song until none left, then halt
@@ -126,3 +128,19 @@ musicFrame = do
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app s
 
+editSong :: Song -> BrickEvent n e -> Song
+editSong s (VtyEvent (EvKey (KChar c) [])) = Song prev (Note (toPitch c)) next
+    where
+        Song prev curr next = s
+editSong s _ = s
+
+toPitch :: Char -> Pitch
+toPitch 'c' = C
+toPitch 'd' = D
+toPitch 'e' = E
+toPitch 'f' = F
+toPitch 'g' = G
+toPitch 'a' = A
+toPitch 'b' = B
+--toPitch 'C' = C'
+toPitch _   = C' -- for now
