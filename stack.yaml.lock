@@ -3,7 +3,21 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: synthesizer-core-0.8.2.1@sha256:8a9c55c7b111b57e4b90f22729d8195ce59b7e3420eb07eeed76d896f14074b0,11888
+    pantry-tree:
+      size: 13100
+      sha256: a1bce56ca55a896e950e0afa5736f4bd3323dc63f443b4347fff234daf3d230a
+  original:
+    hackage: synthesizer-core-0.8.2.1@sha256:8a9c55c7b111b57e4b90f22729d8195ce59b7e3420eb07eeed76d896f14074b0,11888
+- completed:
+    hackage: numeric-quest-0.2.0.2@sha256:07a766138ca21232690d27c3d3860ff51fc1ad8418ae824518d603a7f807a2a0,1428
+    pantry-tree:
+      size: 693
+      sha256: b5a48b40421983ca109d3dc1e4863cf022991d9be7f78378dcc85b8c0b504bc6
+  original:
+    hackage: numeric-quest-0.2.0.2@sha256:07a766138ca21232690d27c3d3860ff51fc1ad8418ae824518d603a7f807a2a0,1428
 snapshots:
 - completed:
     size: 586292

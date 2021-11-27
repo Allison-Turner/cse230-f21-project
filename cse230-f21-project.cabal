@@ -21,12 +21,13 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/Allison-Turner/cse230-f21-project
+  location: https://github.com/githubuser/cse230-f21-project
 
 library
   exposed-modules:
       Lib
       MusicFrame
+      Synth
       Tracker.Song
   other-modules:
       Paths_cse230_f21_project
@@ -36,6 +37,9 @@ library
       aeson
     , base >=4.7 && <5
     , brick
+    , numeric-prelude
+    , sox
+    , synthesizer-core
     , text
     , vty
   default-language: Haskell2010
@@ -52,6 +56,9 @@ executable cse230-f21-project-exe
     , base >=4.7 && <5
     , brick
     , cse230-f21-project
+    , numeric-prelude
+    , sox
+    , synthesizer-core
     , text
     , vty
   default-language: Haskell2010
@@ -69,6 +76,9 @@ test-suite cse230-f21-project-test
     , base >=4.7 && <5
     , brick
     , cse230-f21-project
+    , numeric-prelude
+    , sox
+    , synthesizer-core
     , text
     , vty
   default-language: Haskell2010

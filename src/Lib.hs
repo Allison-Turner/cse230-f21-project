@@ -4,3 +4,5 @@ module Lib
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
+
+-- >>> 1 + 1
