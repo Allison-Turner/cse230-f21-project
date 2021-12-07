@@ -25,7 +25,9 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Menu.EditExistingMenu
+      Menu.MainMenu
+      Menu.UI
       MusicFrame
       Synth
       Tracker.Song
