@@ -71,10 +71,10 @@ drawSong (_, song) = [drawPattern song <=> drawStaff]
 -- | Define how each part of the MusicFrame should look
 attributeMap :: (Editor.Mode, Song) -> AttrMap
 attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Editor.yellow `Brick.on` Editor.grey `V.withStyle` V.bold)
-       , (prevNotesAttr, Editor.green `Brick.on` Editor.grey)
-       , (nextNotesAttr, Editor.orange `Brick.on` Editor.grey)
-       , (staffAttr, fg Editor.white)]
+         (currentNoteAttr, Menu.UI.yellow `Brick.on` Menu.UI.grey `V.withStyle` V.bold)
+       , (prevNotesAttr, Menu.UI.green `Brick.on` Menu.UI.grey)
+       , (nextNotesAttr, Menu.UI.orange `Brick.on` Menu.UI.grey)
+       , (staffAttr, fg Menu.UI.white)]
 
 -- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: (Editor.Mode, Song) -> BrickEvent Name Beat -> EventM Name (Next (Editor.Mode, Song))
