@@ -1,7 +1,7 @@
 module MainMenu where
 
 import MusicFrame
-import UI
+import Menu.UI
 
 import qualified Graphics.Vty as V
 

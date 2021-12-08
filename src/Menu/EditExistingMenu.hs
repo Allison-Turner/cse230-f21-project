@@ -11,9 +11,6 @@ import Data.Text
 import Control.Exception
 import qualified Graphics.Vty as V
 
---drawMenu :: Menu -> [Widget ()]
---drawMenu = error ""
-
 drawFileBrowser :: (Show n, Ord n) => FB.FileBrowser n -> Widget n
 drawFileBrowser b = Brick.Widgets.Center.center $ browser
     where browser = hCenter $ borderWithLabel (str "Choose a file") $ FB.renderFileBrowser True b
@@ -35,8 +32,12 @@ drawHelp b = padTop (Pad 1) $
 --    songFile = Nothing
 --    }
 
---handleEvent :: Menu -> BrickEvent Name e -> EventM Name (Next Menu)
---handleEvent :: Menu -> BrickEvent Name e -> EventM n1 (Next (FB.FileBrowser n1))
+drawMenu :: FB.FileBrowser n -> [Widget n]
+drawMenu = error "not implemented"
+
+initMenu = error "not implemented"
+
+
 handleEvent b (VtyEvent ev) =
     case ev of
         V.EvKey V.KEsc [] | not (FB.fileBrowserIsSearching b) -> halt b
@@ -52,6 +53,7 @@ handleEvent b (VtyEvent ev) =
                 _ -> continue b'
 
 
+app :: App (FB.FileBrowser ()) e ()
 app = App { appDraw = drawMenu
           , appChooseCursor = showFirstCursor
           , appHandleEvent = handleEvent
@@ -59,12 +61,7 @@ app = App { appDraw = drawMenu
           , appAttrMap = const menuAttributes
 }
 
-drawMenu :: FB.FileBrowser n -> [Widget n]
-drawMenu = error "not implemented"
 
-
-editExistingMenu :: IO (FB.FileBrowser ghc-prim-0.6.1:GHC.Types.Any)
+editExistingMenu :: IO (FB.FileBrowser ())
 editExistingMenu = defaultMain app initMenu
 
-initMenu :: FB.FileBrowser n0
-initMenu = error "not implemented"
