@@ -25,7 +25,7 @@ import Brick.Types
 
 import Graphics.Vty as V
 
-data Mode = Insert | Overwrite deriving (Show, Eq, Ord)
+data Mode = Insert | Replace | Visual deriving (Show, Eq, Ord)
 
 -- | Data type to drive the passage of time in units of a musical "beat"
 data Beat = Beat
@@ -81,8 +81,10 @@ handleEvent :: (Editor.Mode, Song) -> BrickEvent Name Beat -> EventM Name (Next 
 -- handleEvent song (AppEvent Beat) = step song
 handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'i') [])) = continue (Insert, song)
 handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'I') [])) = continue (Insert, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'o') [])) = continue (Overwrite, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'O') [])) = continue (Overwrite, song)
+handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'r') [])) = continue (Replace, song)
+handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'R') [])) = continue (Replace, song)
+handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'v') [])) = continue (Visual, song)
+handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'V') [])) = continue (Visual, song)
 handleEvent (m, song) e@(VtyEvent (EvKey KEsc [])) = halt (m, song)
 handleEvent (m, song) e@(VtyEvent (EvKey _ [])) = continue (m, (editSong song m e))
 handleEvent (m, song) _               = continue (m, song)
@@ -96,7 +98,7 @@ step s = let s1 = forwardOneNote s in case s1 of
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
 initSong :: IO (Editor.Mode, Song)
-initSong = return (Insert ,emptySong)
+initSong = return (Visual ,emptySong)
 
 app :: App (Editor.Mode, Song) Beat Name
 app = App
@@ -132,8 +134,9 @@ editSong s _ (VtyEvent (EvKey KDel []))  = case deleteNote s of
 editSong s _ (VtyEvent (EvKey KBS []))   = case deleteNote' s of
     Just song -> song 
     Nothing   -> s
-editSong s@(Song prev curr next) Insert    (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song (curr:prev) (toNote c) next else s
-editSong s@(Song prev curr next) Overwrite (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song prev (toNote c) next else s
+editSong s@(Song prev curr next) Insert  (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song (curr:prev) (toNote c) next else s
+editSong s@(Song prev curr next) Replace (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song prev (toNote c) next else s
+editSong s@(Song prev curr next) Visual  (VtyEvent (EvKey (KChar c) [])) = s
 editSong s _ _ = s
 
 validKey :: Char -> Bool 
