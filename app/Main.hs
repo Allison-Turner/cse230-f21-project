@@ -1,6 +1,6 @@
 module Main where
 
-import Lib
+--import Lib
 import MusicFrame
 import Menu.MainMenu
 import Editor

@@ -108,8 +108,8 @@ app = App
   }
 
 -- | This structure taken from tutorial at https://github.com/samtay/snake/blob/master/src/UI.hs
-musicFrame :: IO ()
-musicFrame = do
+editor :: IO ()
+editor = do
   chan <- newBChan 10
   forkIO $ forever $ do
     writeBChan chan Beat
@@ -129,7 +129,10 @@ editSong s _ (VtyEvent (EvKey KDown [])) = case forwardOneNote s of
 editSong s _ (VtyEvent (EvKey KDel []))  = case deleteNote s of
     Just song -> song 
     Nothing   -> s
-editSong s@(Song prev curr next) Insert    (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song (prev ++ [curr]) (toNote c) next else s
+editSong s _ (VtyEvent (EvKey KBS []))   = case deleteNote' s of
+    Just song -> song 
+    Nothing   -> s
+editSong s@(Song prev curr next) Insert    (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song (curr:prev) (toNote c) next else s
 editSong s@(Song prev curr next) Overwrite (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song prev (toNote c) next else s
 editSong s _ _ = s
 
@@ -151,6 +154,7 @@ validKey 'B' = True
 validKey 's' = True
 validKey 'S' = True
 validKey ' ' = True
+validKey _   = False
 
 
 toNote :: Char -> Note

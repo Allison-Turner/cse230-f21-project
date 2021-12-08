@@ -36,6 +36,11 @@ deleteNote (Song prev _ (n:next)) = Just $ Song prev n next
 deleteNote (Song (p:prev) _ [])   = Just $ Song prev p []
 deleteNote (Song [] _ [])         = Nothing
 
+deleteNote' :: Song -> Maybe Song
+deleteNote' (Song (p:prev) _ next) = Just $ Song prev p next
+deleteNote' (Song [] _ (n:next))   = Just $ Song [] n next
+deleteNote' (Song [] _ [])         = Nothing
+
 goToBeginning :: Song -> Song
 goToBeginning (Song (p:prev) curr next) = goToBeginning (Song prev p (curr:next))
 goToBeginning song = song

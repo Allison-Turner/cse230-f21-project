@@ -1,6 +1,7 @@
 module Menu.MainMenu where
 
 import MusicFrame
+import Editor
 import Menu.UI
 
 import qualified Graphics.Vty as V
@@ -61,7 +62,7 @@ mainMenu = do
     d <- M.defaultMain Menu.MainMenu.app initMenu
     --putStrLn $ "You chose: " <> show (D.dialogSelection d)
     case d of
-        WriteNew -> error "Write"
+        WriteNew -> editor
         EditExisting -> error "Edit"
         PlayFile -> musicFrame 
         _ -> error ""
