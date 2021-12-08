@@ -1,4 +1,4 @@
-module Editor where
+module Interface.Editor where
 
 --this is where James will build his editor brick app
 

@@ -1,7 +1,9 @@
-module MainMenu where
+module Interface.Menu.Start where
 
-import MusicFrame
-import Menu.UI
+import Interface.MusicFrame
+import Interface.UI
+import Interface.Menu.ChooseSongFile
+import Interface.Editor
 
 import qualified Graphics.Vty as V
 
@@ -20,6 +22,7 @@ import qualified Brick.AttrMap as A
 import Brick.Util (on, bg)
 import qualified Brick.Types as T
 import Brick.Widgets.Border (hBorder)
+import qualified Brick.Widgets.FileBrowser as FB
 
 data Choice = WriteNew | EditExisting | PlayFile | Start deriving Show
 
@@ -49,20 +52,24 @@ initMenu = Start
 
 app :: M.App Choice e ()
 app =
-    M.App { M.appDraw = drawMenu
+    M.App { M.appDraw = Interface.Menu.Start.drawMenu
           , M.appChooseCursor = M.showFirstCursor
           , M.appHandleEvent = appEvent
           , M.appStartEvent = return
           , M.appAttrMap = const menuAttributes
           }
 
-mainMenu :: IO ()
+--mainMenu :: IO ()
 mainMenu = do
-    d <- M.defaultMain MainMenu.app initMenu
+    d <- M.defaultMain Interface.Menu.Start.app initMenu
     --putStrLn $ "You chose: " <> show (D.dialogSelection d)
     case d of
         WriteNew -> error "Write"
-        EditExisting -> error "Edit"
+        EditExisting -> do{
+          --selection <- FB.fileBrowserSelection chooserApp;
+          --editor selection
+          error "Edit"
+        }
         PlayFile -> musicFrame 
         _ -> error ""
 

@@ -1,4 +1,4 @@
-module MusicFrame where
+module Interface.MusicFrame where
 
 import Data.Text (Text)
 import qualified Data.Text as T
@@ -8,7 +8,7 @@ import Control.Monad (forever, void)
 
 import Tracker.Song
 
-import Menu.UI
+import Interface.UI
 
 import Brick ( Widget, hBox, simpleMain, (<=>), padAll, str, vBox, App (appStartEvent, App, appDraw, appChooseCursor, appHandleEvent, appAttrMap), neverShowCursor, BrickEvent (AppEvent), EventM, Next, attrMap, AttrMap, attrName, AttrName, fg, bg, on, withAttr, customMain, continue, halt )
 import Brick.Widgets.Border(hBorder)
@@ -37,7 +37,7 @@ staffAttr       = attrName "staffAttr"
 
 
 -- | Draw a single Note, aligned with the "staff" at the bottom of the screen
-drawNote :: Note -> Widget ()
+drawNote :: Note -> Widget n
 drawNote n =
     let totalLines = 1 + fromEnum (maxBound :: Pitch)
     in hCenter $ hBox $ map (hCenter . str) $ case n of
@@ -47,12 +47,14 @@ drawNote n =
         Rest -> replicate totalLines pipe
 
 -- | Draw each Note that makes up a Song in order
-drawPattern :: Song -> Widget ()
-drawPattern s = (vBox (map drawNote (reverse (prevNotes s))) & withAttr prevNotesAttr) <=> (drawNote (currentNote s) & withAttr currentNoteAttr) <=> (vBox (map drawNote (nextNotes s)) & withAttr nextNotesAttr)
+drawPattern :: Song -> Widget n
+drawPattern s = vBox (map (withAttr prevNotesAttr . drawNote) (reverse (prevNotes s))) <=> 
+                vBox [ (withAttr currentNoteAttr . drawNote) (currentNote s) ] <=> 
+                vBox (map (withAttr nextNotesAttr . drawNote) (nextNotes s))
 
 -- | Draw a "staff" that consists of a column for each Note. 
 -- | Progression upwards through the column represents the passage of Beats (musical time)
-drawStaff :: Widget ()
+drawStaff :: Widget n
 drawStaff = 
     vBox [ hBorder 
          , hCenter $ hBox $ map (hCenter . str . show) [minBound..maxBound :: Pitch] ] & withAttr staffAttr
@@ -65,10 +67,10 @@ drawSong song = [drawPattern song <=> drawStaff]
 -- | Define how each part of the MusicFrame should look
 attributeMap :: Song -> AttrMap
 attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Menu.UI.yellow `Brick.on` Menu.UI.grey `V.withStyle` V.bold)
-       , (prevNotesAttr, Menu.UI.green `Brick.on` Menu.UI.grey)
-       , (nextNotesAttr, Menu.UI.orange `Brick.on` Menu.UI.grey)
-       , (staffAttr, fg Menu.UI.white)]
+         (currentNoteAttr, Interface.UI.yellow `Brick.on` Interface.UI.grey `V.withStyle` V.bold)
+       , (prevNotesAttr, Interface.UI.green `Brick.on` Interface.UI.grey)
+       , (nextNotesAttr, Interface.UI.orange `Brick.on` Interface.UI.grey)
+       , (staffAttr, fg Interface.UI.white)]
 
 -- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
