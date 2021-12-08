@@ -5,6 +5,7 @@ import Interface.UI
 import Interface.Menu.ChooseSongFile
 import Interface.Editor
 
+
 import qualified Graphics.Vty as V
 
 import qualified Brick.Main as M
