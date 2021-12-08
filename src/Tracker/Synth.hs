@@ -1,4 +1,4 @@
-module Synth where
+module Tracker.Synth where
 
 import Synthesizer.Plain.Displacement as Disp
 import Sound.Sox.Play as Play

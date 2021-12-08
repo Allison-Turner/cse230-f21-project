@@ -1,4 +1,4 @@
-module Menu.UI where
+module Interface.UI where
 
 import Graphics.Vty as V
 
@@ -7,13 +7,13 @@ import Brick (AttrMap, attrMap, AttrName, attrName, on)
 import Brick.Widgets.FileBrowser
 
 -- | Named resources
-type Name = ()
+data Name = Name deriving (Eq, Show, Ord)
 
 data Mode = Write | Read deriving Show
 type SongFile = Maybe FilePath
 
 data Menu = Menu{
-    fileMode :: Menu.UI.Mode,
+    fileMode :: Interface.UI.Mode,
     songFile :: SongFile
 } deriving Show
 
@@ -41,5 +41,5 @@ errorAttr = attrName "error"
 
 menuAttributes :: AttrMap
 menuAttributes = attrMap V.defAttr [
-    (errorAttr, Menu.UI.white `on` Menu.UI.red)
+    (errorAttr, Interface.UI.white `on` Interface.UI.red)
     ]

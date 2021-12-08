@@ -1,8 +1,6 @@
 module Main where
 
-import Lib
-import MusicFrame
-import MainMenu
+import Interface.Menu.Start
 
 main :: IO ()
 main = mainMenu

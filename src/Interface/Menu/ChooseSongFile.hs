@@ -1,20 +1,26 @@
-{-# OPTIONS_GHC -Wno-incomplete-patterns #-}
-module Menu.EditExistingMenu where
+module Interface.Menu.ChooseSongFile where
 
-import Menu.UI
+import Interface.UI
+
+import Data.Text
+import Control.Exception
+
+import qualified Graphics.Vty as V
+
 import Brick 
 import qualified Brick.Widgets.FileBrowser as FB
 import Brick.Widgets.Border
 import Brick.Widgets.Center
 import Brick.Types
-import Data.Text
-import Control.Exception
-import qualified Graphics.Vty as V
+import Brick.Widgets.FileBrowser (FileInfo)
+
+
 
 drawFileBrowser :: (Show n, Ord n) => FB.FileBrowser n -> Widget n
 drawFileBrowser b = Brick.Widgets.Center.center $ browser
     where browser = hCenter $ borderWithLabel (str "Choose a file") $ FB.renderFileBrowser True b
 
+drawHelp :: FB.FileBrowser n1 -> Widget n2
 drawHelp b = padTop (Pad 1) $
                vBox [ case FB.fileBrowserException b of
                           Nothing -> emptyWidget
@@ -26,18 +32,12 @@ drawHelp b = padTop (Pad 1) $
                     , hCenter $ str "Esc: quit"
                     ]
 
---initMenu :: Menu
---initMenu = Menu{
---    fileMode = Write, 
---    songFile = Nothing
---    }
-
-drawMenu :: FB.FileBrowser n -> [Widget n]
-drawMenu = error "not implemented"
-
-initMenu = error "not implemented"
+drawMenu :: (Show n, Ord n) => FB.FileBrowser n -> [Widget n]
+drawMenu b = [drawFileBrowser b, drawHelp b]
 
 
+
+handleEvent :: Ord n1 => FB.FileBrowser n1 -> BrickEvent n2 e -> EventM n1 (Next (FB.FileBrowser n1))
 handleEvent b (VtyEvent ev) =
     case ev of
         V.EvKey V.KEsc [] | not (FB.fileBrowserIsSearching b) -> halt b
@@ -52,8 +52,11 @@ handleEvent b (VtyEvent ev) =
                         _ -> halt b'
                 _ -> continue b'
 
+handleEvent b _ = continue b
 
-app :: App (FB.FileBrowser ()) e ()
+
+
+app :: App (FB.FileBrowser Name) e Name
 app = App { appDraw = drawMenu
           , appChooseCursor = showFirstCursor
           , appHandleEvent = handleEvent
@@ -61,7 +64,6 @@ app = App { appDraw = drawMenu
           , appAttrMap = const menuAttributes
 }
 
-
-editExistingMenu :: IO (FB.FileBrowser ())
-editExistingMenu = defaultMain app initMenu
-
+-- | TODO: add file type check 
+chooserApp :: IO (FB.FileBrowser Name)
+chooserApp = defaultMain app =<< FB.newFileBrowser FB.selectNonDirectories Name Nothing
