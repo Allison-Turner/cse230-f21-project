@@ -1,4 +1,4 @@
-module MainMenu where
+module Menu.MainMenu where
 
 import MusicFrame
 import Menu.UI
@@ -58,7 +58,7 @@ app =
 
 mainMenu :: IO ()
 mainMenu = do
-    d <- M.defaultMain MainMenu.app initMenu
+    d <- M.defaultMain Menu.MainMenu.app initMenu
     --putStrLn $ "You chose: " <> show (D.dialogSelection d)
     case d of
         WriteNew -> error "Write"

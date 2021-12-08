@@ -2,7 +2,8 @@ module Main where
 
 import Lib
 import MusicFrame
-import MainMenu
+import Menu.MainMenu
+import Editor
 
 main :: IO ()
 main = mainMenu

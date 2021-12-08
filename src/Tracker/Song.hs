@@ -31,6 +31,11 @@ backOneNote :: Song -> Maybe Song
 backOneNote (Song (p:prev) curr next) = Just (Song prev p (curr:next))
 backOneNote (Song [] curr next) = Nothing -- Start of the song!
 
+deleteNote :: Song -> Maybe Song
+deleteNote (Song prev _ (n:next)) = Just $ Song prev n next
+deleteNote (Song (p:prev) _ [])   = Just $ Song prev p []
+deleteNote (Song [] _ [])         = Nothing
+
 goToBeginning :: Song -> Song
 goToBeginning (Song (p:prev) curr next) = goToBeginning (Song prev p (curr:next))
 goToBeginning song = song
@@ -45,3 +50,6 @@ $(deriveJSON defaultOptions ''Song)
 exampleSong :: Song
 exampleSong = Song [] curr next
   where curr:next = map Note [D,E,F,G,E,E,C,D]
+
+emptySong :: Song
+emptySong = Song [] Rest []

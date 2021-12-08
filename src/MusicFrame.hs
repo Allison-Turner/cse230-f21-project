@@ -8,8 +8,6 @@ import Control.Monad (forever, void)
 
 import Tracker.Song
 
-import Menu.UI
-
 import Brick ( Widget, hBox, simpleMain, (<=>), padAll, str, vBox, App (appStartEvent, App, appDraw, appChooseCursor, appHandleEvent, appAttrMap), neverShowCursor, BrickEvent (AppEvent), EventM, Next, attrMap, AttrMap, attrName, AttrName, fg, bg, on, withAttr, customMain, continue, halt )
 import Brick.Widgets.Border(hBorder)
 import qualified Brick.Widgets.Center(hCenter)
@@ -24,6 +22,9 @@ import Graphics.Vty as V
 -- | Data type to drive the passage of time in units of a musical "beat"
 data Beat = Beat
 
+-- | Named resources
+type Name = ()
+
 -- | Define any attributes we might apply for styling
 -- | sort of like adding a CSS class to an HTML element, so any CSS rules for that class are applied to it. this is the list of CSS classes
 currentNoteAttr, prevNotesAttr, nextNotesAttr, pitchAttr, restAttr, staffAttr :: AttrName
@@ -33,6 +34,25 @@ nextNotesAttr   = attrName "nextNotesAttr"
 pitchAttr       = attrName "pitchAttr"
 restAttr        = attrName "restAttr"
 staffAttr       = attrName "staffAttr"
+
+-- | Color macros for convenience
+red, orange, yellow, green, blue, purple, pink, black, grey, white :: Color
+red    = V.rgbColor 255 0 0
+orange = V.rgbColor 255 128 0
+yellow = V.rgbColor 255 255 0
+green  = V.rgbColor 0 255 0
+blue   = V.rgbColor 0 0 255
+purple = V.rgbColor 128 0 255
+pink   = V.rgbColor 255 0 191
+black  = V.rgbColor 0 0 0
+grey   = V.rgbColor 80 50 50
+white  = V.rgbColor 255 255 255
+
+-- | Usefully shaped characters
+square, pipe, equals :: String 
+square = "\2588"
+pipe   = "|"
+equals = "="
 
 
 
@@ -65,10 +85,10 @@ drawSong song = [drawPattern song <=> drawStaff]
 -- | Define how each part of the MusicFrame should look
 attributeMap :: Song -> AttrMap
 attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Menu.UI.yellow `Brick.on` Menu.UI.grey `V.withStyle` V.bold)
-       , (prevNotesAttr, Menu.UI.green `Brick.on` Menu.UI.grey)
-       , (nextNotesAttr, Menu.UI.orange `Brick.on` Menu.UI.grey)
-       , (staffAttr, fg Menu.UI.white)]
+         (currentNoteAttr, MusicFrame.yellow `Brick.on` MusicFrame.grey `V.withStyle` V.bold)
+       , (prevNotesAttr, MusicFrame.green `Brick.on` MusicFrame.grey)
+       , (nextNotesAttr, MusicFrame.orange `Brick.on` MusicFrame.grey)
+       , (staffAttr, fg MusicFrame.white)]
 
 -- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
