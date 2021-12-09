@@ -114,8 +114,8 @@ editSong s _ _ = s
 
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
-initSong :: IO (Interface.Editor.Mode, Song)
-initSong = return (Visual ,emptySong)
+initSong :: Song -> IO (Interface.Editor.Mode, Song)
+initSong s = return (Visual, s)
 
 app :: App (Interface.Editor.Mode, Song) Beat Name
 app = App
@@ -127,8 +127,6 @@ app = App
   }
 
 
-editor :: IO (Interface.Editor.Mode, Song)
-editor = do{
-    s <- initSong;
-    defaultMain app s
-}
+
+editor :: (Interface.Editor.Mode, Song) -> IO (Interface.Editor.Mode, Song)
+editor = defaultMain app

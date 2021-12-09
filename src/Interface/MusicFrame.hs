@@ -3,8 +3,6 @@ module Interface.MusicFrame where
 import Data.Text (Text)
 import qualified Data.Text as T
 import Data.Function
-import GHC.Conc (atomically, newTVar, forkIO, readTVar, threadDelay)
-import Control.Monad (forever, void)
 
 import Tracker.Song
 
@@ -14,7 +12,6 @@ import Brick ( Widget, hBox, simpleMain, (<=>), padAll, str, vBox, App (appStart
 import Brick.Widgets.Border(hBorder)
 import qualified Brick.Widgets.Center(hCenter)
 import Brick.Widgets.Center (hCenter)
-import Brick.BChan (newBChan, writeBChan)
 import Brick.Types
 
 import Graphics.Vty as V

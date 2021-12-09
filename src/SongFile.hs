@@ -1,9 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 module SongFile where
 
-import System.Directory
-
 import Tracker.Song
+
+import System.Directory
 import Data.Aeson
 import Data.ByteString.Lazy as B
 import Data.ByteString.Lazy.Char8 as BC

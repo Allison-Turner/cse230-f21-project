@@ -26,6 +26,8 @@ import Brick.Util (on, bg)
 import qualified Brick.Types as T
 import Brick.Widgets.Border (hBorder)
 import qualified Brick.Widgets.FileBrowser as FB
+import Brick.Widgets.FileBrowser (FileInfo(fileInfoFilePath))
+import SongFile (deserializeSong, serializeSongToSongFile)
 
 
 
@@ -75,14 +77,19 @@ app =
 --mainMenu :: IO ()
 mainMenu = do
     d <- M.defaultMain Interface.Menu.Start.app initMenu
-    --putStrLn $ "You chose: " <> show (D.dialogSelection d)
     case d of
         Start -> mainMenu
         WriteNew -> error "Write"
         EditExisting -> do{
-          --selection <- FB.fileBrowserSelection chooserApp;
-          --editor selection
-          error "Edit"
+          ch <- chooserApp;
+          s <- deserializeSong (extractFilePath ch);
+          i <- Interface.Editor.initSong s;
+          out <- editor i;
+
+          serializeSongToSongFile (extractFilePath ch) (snd out)
         }
         PlayFile -> play 
+
+extractFilePath :: FB.FileBrowser n -> FilePath
+extractFilePath fb = fileInfoFilePath (head (FB.fileBrowserSelection fb))
 
