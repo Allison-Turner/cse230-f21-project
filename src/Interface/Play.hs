@@ -19,12 +19,13 @@ import Brick.BChan
 -- | Define how each part of the MusicFrame should look
 attributeMap :: Song -> AttrMap
 attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Interface.UI.yellow `Brick.on` Interface.UI.grey `V.withStyle` V.bold)
-       , (prevNotesAttr, Interface.UI.green `Brick.on` Interface.UI.grey)
-       , (nextNotesAttr, Interface.UI.orange `Brick.on` Interface.UI.grey)
+         (currentNoteAttr, Interface.UI.white `Brick.on` (bkgColor) `V.withStyle` V.bold)
+       , (prevNotesAttr, Interface.UI.darkgrey `Brick.on` Interface.UI.black)
+       , (nextNotesAttr, Interface.UI.grey `Brick.on` Interface.UI.black)
        , (staffAttr, fg Interface.UI.white)]
 
-
+bkgColor :: Color
+bkgColor = Interface.UI.grey
 
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget

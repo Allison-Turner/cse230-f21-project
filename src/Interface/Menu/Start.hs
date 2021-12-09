@@ -85,8 +85,7 @@ mainMenu = do
           s <- return emptySong;
           i <- Interface.Editor.initSong s;
           out <- editor i;
-          return ()
-          -- TODO: implement saving!!!!!
+          serializeSongToSongFile "./output.jsong" (snd out)
         }
 
         EditExisting -> do{

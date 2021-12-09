@@ -30,10 +30,11 @@ deserializeSong fileName = do{
 
 serializeSongToSongFile :: FilePath -> Song -> IO ()
 serializeSongToSongFile fileName song = do{
-    checkFile <- doesFileExist fileName;
-    if checkFile 
-    then BC.writeFile fileName (encode song) 
-    else error "error in SongFile.serializeSongToSongFile: checkFile was False"
+    -- checkFile <- doesFileExist fileName;
+    -- if checkFile 
+    -- then BC.writeFile fileName (encode song) 
+    -- else error "error in SongFile.serializeSongToSongFile: checkFile was False"
+    BC.writeFile fileName (encode (goToBeginning song))
 }
 
 makeNewSongFile = error ""
