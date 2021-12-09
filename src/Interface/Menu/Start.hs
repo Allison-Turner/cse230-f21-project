@@ -28,6 +28,7 @@ import Brick.Widgets.Border (hBorder)
 import qualified Brick.Widgets.FileBrowser as FB
 import Brick.Widgets.FileBrowser (FileInfo(fileInfoFilePath))
 import SongFile (deserializeSong, serializeSongToSongFile)
+import Tracker.Song
 
 
 
@@ -80,7 +81,13 @@ mainMenu = do
     case d of
         Start -> mainMenu
 
-        WriteNew -> error "Write"
+        WriteNew -> do{
+          s <- return emptySong;
+          i <- Interface.Editor.initSong s;
+          out <- editor i;
+          return ()
+          -- TODO: implement saving!!!!!
+        }
 
         EditExisting -> do{
           ch <- chooserApp;
