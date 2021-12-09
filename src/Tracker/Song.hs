@@ -5,12 +5,13 @@ module Tracker.Song where
 
 import Data.Aeson.TH
 import GHC.Generics
+import Data.Ix (Ix)
 
 -- | A pitch
 --
 -- TODO: represent more pitches. For now, a single octave is fine.
 data Pitch = C | D | E | F | G | A | B | C'
-           deriving (Show, Eq, Ord, Enum, Bounded)
+           deriving (Show, Eq, Ord, Enum, Bounded, Ix)
 
 data Note = Note Pitch | Rest
           deriving (Show, Eq, Ord)

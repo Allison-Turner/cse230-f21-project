@@ -30,6 +30,9 @@ dependencies:
 - text
 - vty
 - aeson
+- array
+- sdl2
+- sdl2-mixer
 
 library:
   source-dirs: src
