@@ -48,7 +48,7 @@ step s = let s1 = forwardOneNote s in case s1 of
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
 initSong :: Song -> IO Song
-initSong s = return exampleSong 
+initSong s = return s 
 
 
 
