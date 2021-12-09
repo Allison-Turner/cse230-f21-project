@@ -1,7 +1,7 @@
 -- | Helper function for making sounds
-module Audio (initAudio, closeAudio, shutUp, playPitch) where
+module Audio (initAudio, closeAudio, shutUp, playNote, closeTheChannel) where
 
-import Tracker.Song (Pitch(..))
+import Tracker.Song (Pitch(..), Note(Note, Rest))
 
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Array
@@ -54,7 +54,7 @@ notPlaying :: Mixer.Chunk
         $ map f [1..sampleCount]
       where
         freq, period :: Double
-        freq = 440 * 2 ** ((semitone p - semitone A) / 12)
+        freq = (440 * 2 ** ((semitone p - semitone A) / 12)) / 2
         period = fromIntegral sampleRate / freq
         -- round 1 second to nearest number of periods
         sampleCount = round $ period * fromIntegral (round freq)
@@ -102,4 +102,9 @@ shutUp = void $ Mixer.playOn theChannel Mixer.Forever notPlaying
 playPitch :: Pitch -> IO ()
 playPitch p = void $ Mixer.playOn theChannel Mixer.Forever $ thePitches ! p
 
+playNote :: Note -> IO ()
+playNote Rest = shutUp
+playNote (Note p) = playPitch p
 
+closeTheChannel :: IO ()
+closeTheChannel = Mixer.pause theChannel

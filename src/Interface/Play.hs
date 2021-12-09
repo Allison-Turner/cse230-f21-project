@@ -1,11 +1,14 @@
 module Interface.Play where
 
 import Control.Monad
+import Control.Monad.IO.Class
 import GHC.Conc
 
 import Tracker.Song
 import Interface.UI
 import Interface.MusicFrame
+
+import Audio
 
 import Graphics.Vty as V
 
@@ -40,8 +43,12 @@ handleEvent song _               = continue song
 -- | Advance through Song until none left, then halt
 step :: Song -> EventM Name (Next Song)
 step s = let s1 = forwardOneNote s in case s1 of
-       Nothing -> halt s
-       Just s1 -> continue s1
+       Nothing -> do
+         liftIO (closeTheChannel)
+         halt s
+       Just s1 -> do 
+         liftIO (playNote (currentNote s1))
+         continue s1
 
 
 
@@ -66,10 +73,11 @@ app = App
 -- | This structure taken from tutorial at https://github.com/samtay/snake/blob/master/src/UI.hs
 play :: Song -> IO ()
 play s = do
+  playNote (currentNote s)  -- funky off-by-one error otherwise
   chan <- newBChan 10
   forkIO $ forever $ do
-    writeBChan chan Beat
     threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
+    writeBChan chan Beat
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app s
