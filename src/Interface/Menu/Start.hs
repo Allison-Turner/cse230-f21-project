@@ -74,7 +74,7 @@ app =
 
 
 
---mainMenu :: IO ()
+mainMenu :: IO ()
 mainMenu = do
     d <- M.defaultMain Interface.Menu.Start.app initMenu
     case d of
@@ -85,10 +85,14 @@ mainMenu = do
           s <- deserializeSong (extractFilePath ch);
           i <- Interface.Editor.initSong s;
           out <- editor i;
-
           serializeSongToSongFile (extractFilePath ch) (snd out)
         }
-        PlayFile -> play 
+        PlayFile -> do{
+          ch <- chooserApp;
+          s <- deserializeSong (extractFilePath ch);
+          i <- Interface.Play.initSong s;
+          play i
+        }
 
 extractFilePath :: FB.FileBrowser n -> FilePath
 extractFilePath fb = fileInfoFilePath (head (FB.fileBrowserSelection fb))

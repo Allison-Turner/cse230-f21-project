@@ -47,8 +47,8 @@ step s = let s1 = forwardOneNote s in case s1 of
 
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
-initSong :: IO Song
-initSong = return exampleSong 
+initSong :: Song -> IO Song
+initSong s = return exampleSong 
 
 
 
@@ -64,13 +64,13 @@ app = App
 
 
 -- | This structure taken from tutorial at https://github.com/samtay/snake/blob/master/src/UI.hs
-play :: IO ()
-play = do
+play :: Song -> IO ()
+play s = do
   chan <- newBChan 10
   forkIO $ forever $ do
     writeBChan chan Beat
     threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
-  s <- initSong
+  --s <- initSong
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app s
