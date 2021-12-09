@@ -70,7 +70,6 @@ play s = do
   forkIO $ forever $ do
     writeBChan chan Beat
     threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
-  --s <- initSong
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app s

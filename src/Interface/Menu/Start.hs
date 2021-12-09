@@ -79,7 +79,9 @@ mainMenu = do
     d <- M.defaultMain Interface.Menu.Start.app initMenu
     case d of
         Start -> mainMenu
+
         WriteNew -> error "Write"
+
         EditExisting -> do{
           ch <- chooserApp;
           s <- deserializeSong (extractFilePath ch);
@@ -87,6 +89,7 @@ mainMenu = do
           out <- editor i;
           serializeSongToSongFile (extractFilePath ch) (snd out)
         }
+        
         PlayFile -> do{
           ch <- chooserApp;
           s <- deserializeSong (extractFilePath ch);
