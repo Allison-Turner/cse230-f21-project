@@ -4,7 +4,7 @@
 module Tracker.Song where
 
 import Data.Aeson.TH
-
+import GHC.Generics
 
 -- | A pitch
 --
@@ -21,7 +21,6 @@ data Song = Song
   , currentNote :: Note
   , nextNotes :: [Note]
   } deriving (Show, Eq, Ord)
-
 
 forwardOneNote :: Song -> Maybe Song
 forwardOneNote (Song prev curr (n:next)) = Just (Song (curr:prev) n next)
