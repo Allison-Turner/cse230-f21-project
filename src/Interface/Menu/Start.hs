@@ -2,8 +2,10 @@ module Interface.Menu.Start where
 
 import Interface.MusicFrame
 import Interface.UI
-import Interface.Menu.ChooseSongFile
+import Interface.Play
 import Interface.Editor
+import Interface.Menu.ChooseSongFile
+
 
 
 import qualified Graphics.Vty as V
@@ -25,16 +27,22 @@ import qualified Brick.Types as T
 import Brick.Widgets.Border (hBorder)
 import qualified Brick.Widgets.FileBrowser as FB
 
+
+
 data Choice = WriteNew | EditExisting | PlayFile | Start deriving Show
 
+
+
 drawMenu :: Choice -> [Widget ()]
-drawMenu d = [C.hCenter $ padAll 1 $ (str "Terminal Tracker Menu"<=> hBorder <=> drawStartMenu)]
+drawMenu d = [C.hCenter $ padAll 1 (str "Terminal Tracker Menu"<=> hBorder <=> drawStartMenu)]
 
 drawStartMenu :: Widget n
 drawStartMenu = vBox [str "Start writing in a new Song file <W>",
                       str "Choose a Song file to edit <E>",
                       str "Choose a Song file to play <R>"
                      ]
+
+
 
 appEvent :: Choice -> BrickEvent () e -> T.EventM () (T.Next Choice)
 appEvent d (VtyEvent ev) =
@@ -51,6 +59,8 @@ appEvent d _ = M.continue d
 initMenu :: Choice
 initMenu = Start
 
+
+
 app :: M.App Choice e ()
 app =
     M.App { M.appDraw = Interface.Menu.Start.drawMenu
@@ -60,17 +70,19 @@ app =
           , M.appAttrMap = const menuAttributes
           }
 
+
+
 --mainMenu :: IO ()
 mainMenu = do
     d <- M.defaultMain Interface.Menu.Start.app initMenu
     --putStrLn $ "You chose: " <> show (D.dialogSelection d)
     case d of
+        Start -> mainMenu
         WriteNew -> error "Write"
         EditExisting -> do{
           --selection <- FB.fileBrowserSelection chooserApp;
           --editor selection
           error "Edit"
         }
-        PlayFile -> musicFrame 
-        _ -> error ""
+        PlayFile -> play 
 

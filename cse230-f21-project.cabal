@@ -29,6 +29,7 @@ library
       Interface.Menu.ChooseSongFile
       Interface.Menu.Start
       Interface.MusicFrame
+      Interface.Play
       Interface.UI
       Tracker.Song
       Tracker.Synth

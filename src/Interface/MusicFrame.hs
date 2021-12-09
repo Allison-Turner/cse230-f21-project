@@ -24,6 +24,8 @@ import Graphics.Vty as V
 -- | Data type to drive the passage of time in units of a musical "beat"
 data Beat = Beat
 
+
+
 -- | Define any attributes we might apply for styling
 -- | sort of like adding a CSS class to an HTML element, so any CSS rules for that class are applied to it. this is the list of CSS classes
 currentNoteAttr, prevNotesAttr, nextNotesAttr, pitchAttr, restAttr, staffAttr :: AttrName
@@ -59,77 +61,3 @@ drawStaff =
     vBox [ hBorder 
          , hCenter $ hBox $ map (hCenter . str . show) [minBound..maxBound :: Pitch] ] & withAttr staffAttr
 
--- | Drawing each part of the song display 
--- | <=> puts drawPattern Widget on top of drawStaff Widget
-drawSong :: Song -> [Widget Name]
-drawSong song = [drawPattern song <=> drawStaff]
-
--- | Define how each part of the MusicFrame should look
-attributeMap :: Song -> AttrMap
-attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Interface.UI.yellow `Brick.on` Interface.UI.grey `V.withStyle` V.bold)
-       , (prevNotesAttr, Interface.UI.green `Brick.on` Interface.UI.grey)
-       , (nextNotesAttr, Interface.UI.orange `Brick.on` Interface.UI.grey)
-       , (staffAttr, fg Interface.UI.white)]
-
--- | TODO: handle keyboard commands for pause, exit, etc
-handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
-handleEvent song (AppEvent Beat) = step song
-handleEvent song e@(VtyEvent (EvKey (KChar c) [])) = continue (editSong song e) 
-handleEvent song _               = continue song
-
--- | Advance through Song until none left, then halt
-step :: Song -> EventM Name (Next Song)
-step s = let s1 = forwardOneNote s in case s1 of
-       Nothing -> halt s
-       Just s1 -> continue s1
-
--- | this is where we point the UI at the Song that we want to display
--- | TODO: plug in real control structures for file system and terminal input
-initSong :: IO Song
-initSong = return exampleSong 
-
-app :: App Song Beat Name
-app = App
-  { appDraw         = drawSong
-  , appChooseCursor = neverShowCursor
-  , appHandleEvent  = handleEvent
-  , appStartEvent   = return
-  , appAttrMap      = attributeMap
-  }
-
--- | This structure taken from tutorial at https://github.com/samtay/snake/blob/master/src/UI.hs
-musicFrame :: IO ()
-musicFrame = do
-  chan <- newBChan 10
-  forkIO $ forever $ do
-    writeBChan chan Beat
-    threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
-  s <- initSong
-  let builder = V.mkVty V.defaultConfig
-  initialVty <- builder
-  void $ customMain initialVty builder (Just chan) app s
-
-editSong :: Song -> BrickEvent n e -> Song
-editSong s (VtyEvent (EvKey (KChar c) [])) = Song prev (Note (toPitch c)) next
-    where
-        Song prev curr next = s
-editSong s _ = s
-
-toPitch :: Char -> Pitch
-toPitch 'c' = C
-toPitch 'C' = C
-toPitch 'd' = D
-toPitch 'D' = D
-toPitch 'e' = E
-toPitch 'E' = E
-toPitch 'f' = F
-toPitch 'F' = F
-toPitch 'g' = G
-toPitch 'G' = G
-toPitch 'a' = A
-toPitch 'A' = A
-toPitch 'b' = B
-toPitch 'B' = B
---toPitch 'c' = C'
-toPitch _   = C' -- for now, in the future can possibly use capital 'C' for C and lower case 'c' for C'
