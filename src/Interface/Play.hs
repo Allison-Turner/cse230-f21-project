@@ -51,6 +51,10 @@ drawSong song = [drawPattern song <=> drawStaff]
 -- | TODO: handle keyboard commands for pause, exit, etc
 handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
 handleEvent song (AppEvent Beat) = step song
+handleEvent song (VtyEvent (EvKey KEsc [])) = do 
+  liftIO (closeTheChannel)
+  halt song
+handleEvent song (VtyEvent (EvKey KEsc [])) = halt song
 handleEvent song _               = continue song
 
 
