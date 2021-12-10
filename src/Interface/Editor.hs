@@ -5,10 +5,13 @@ import qualified Data.Text as T
 import Data.Function
 import GHC.Conc (atomically, newTVar, forkIO, readTVar, threadDelay)
 import Control.Monad (forever, void)
+import Control.Monad.IO.Class
+import Data.Maybe
 
 import Tracker.Song
 import Interface.UI
 import Interface.MusicFrame
+import Audio
 
 import Brick ( Widget, hBox, simpleMain, (<=>), padAll, str, vBox, App (appStartEvent, App, appDraw, appChooseCursor, appHandleEvent, appAttrMap), neverShowCursor, BrickEvent (AppEvent), EventM, Next, attrMap, AttrMap, attrName, AttrName, fg, bg, on, withAttr, customMain, continue, halt, defaultMain )
 import Brick.Widgets.Border(hBorder)
@@ -71,37 +74,35 @@ handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'V') [])) = continue (Visual,
 handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '+') [])) = continue (m, song, b + 4)
 handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '-') [])) = continue (m, song, b - 4)
 handleEvent (m, song, b) e@(VtyEvent (EvKey KEsc [])) = halt (m, song, b)
-handleEvent (m, song, b) e@(VtyEvent (EvKey _ [])) = continue (m, (editSong song m e), b)
+handleEvent (m, song, b) e@(VtyEvent (EvKey _ [])) = do
+  song' <- liftIO $ editSong song m e
+  continue (m, song', b)
 handleEvent (m, song, b) _               = continue (m, song, b)
 
 
 
-editSong :: Song -> Interface.Editor.Mode -> BrickEvent n e -> Song
-editSong s _ (VtyEvent (EvKey KUp []))   = case backOneNote s of 
-    Just song -> song
-    Nothing   -> s
-editSong s _ (VtyEvent (EvKey KDown [])) = case forwardOneNote s of
-    Just song -> song
-    Nothing   -> s
-editSong s _ (VtyEvent (EvKey KDel []))  = case deleteNote s of
-    Just song -> song 
-    Nothing   -> s
-editSong s _ (VtyEvent (EvKey KBS []))   = case deleteNote' s of
-    Just song -> song 
-    Nothing   -> s
+editSong :: Song -> Interface.Editor.Mode -> BrickEvent n e -> IO Song
+editSong s _ (VtyEvent (EvKey KUp []))   = return $ fromMaybe s $ backOneNote s
+editSong s _ (VtyEvent (EvKey KDown [])) = return $ fromMaybe s $ forwardOneNote s
+editSong s _ (VtyEvent (EvKey KDel []))  = return $ fromMaybe s $ deleteNote s
+editSong s _ (VtyEvent (EvKey KBS []))   = return $ fromMaybe s $ deleteNote' s
 editSong s@(Song prev curr next) Insert  (VtyEvent (EvKey (KChar c) [])) = case toNote c of 
-    Just note -> Song (curr:prev) note next 
-    Nothing   -> s
+    Just note -> do 
+      brieflyPlayNote note
+      return $ Song (note:prev) curr next 
+    Nothing   -> return s
 editSong s@(Song prev curr next) Replace (VtyEvent (EvKey (KChar c) [])) = case toNote c of
-    Just note -> Song prev note next 
-    Nothing   -> s
-editSong s@(Song prev curr next) Visual  (VtyEvent (EvKey (KChar c) [])) = s
-editSong s _ _ = s
+    Just note -> do
+      brieflyPlayNote note
+      let song = Song prev note next
+      return $ fromMaybe song $ forwardOneNote s
+    Nothing   -> return s
+-- editSong s@(Song prev curr next) Visual  (VtyEvent (EvKey (KChar c) [])) = return s
+editSong s _ _ = return s
 
 
 
 -- | this is where we point the UI at the Song that we want to display
--- | TODO: plug in real control structures for file system and terminal input
 initSong :: Song -> Int -> IO (Interface.Editor.Mode, Song, Int)
 initSong s b = return (Visual, s, b)
 

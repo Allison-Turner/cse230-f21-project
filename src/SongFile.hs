@@ -10,13 +10,12 @@ import Data.ByteString.Lazy.Char8 as BC
 
 
 
-readFromSongFile :: FilePath -> Maybe ByteString 
-readFromSongFile fileName = do{
-    checkFile <- doesFileExist fileName;
+readFromSongFile :: FilePath -> IO (Maybe ByteString)
+readFromSongFile fileName = do
+    checkFile <- doesFileExist fileName
     if checkFile
-    then Just (BC.readFile fileName)
-    else Nothing
-}
+      then Just <$> BC.readFile fileName
+      else return Nothing
 
 checkDecodeErrors :: Maybe (Song, Int) -> (Song, Int)
 checkDecodeErrors Nothing = (emptySong, 0)
@@ -26,7 +25,7 @@ deserializeSong :: FilePath -> IO (Song, Int)
 deserializeSong fileName = do{
     songBytes <- readFromSongFile fileName;
     case songBytes of
-        Just -> return (checkDecodeErrors (decode songBytes))
+        Just bytes -> return (checkDecodeErrors (decode bytes))
         Nothing -> return (emptySong, 0)
 }
 
