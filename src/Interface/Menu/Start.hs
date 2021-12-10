@@ -6,10 +6,7 @@ import Interface.Play
 import Interface.Editor
 import Interface.Menu.ChooseSongFile
 
-
-
 import qualified Graphics.Vty as V
-
 import qualified Brick.Main as M
 import Brick.Types
   ( Widget
@@ -27,6 +24,7 @@ import qualified Brick.Types as T
 import Brick.Widgets.Border (hBorder)
 import qualified Brick.Widgets.FileBrowser as FB
 import Brick.Widgets.FileBrowser (FileInfo(fileInfoFilePath))
+import Control.Monad (unless)
 import SongFile (deserializeSong, serializeSongToSongFile)
 import Tracker.Song
 
@@ -91,30 +89,22 @@ mainMenu = do
           mainMenu
         }
 
-        EditExisting -> do{
-          ch <- chooserApp;
-          (s,b) <- deserializeSong (extractFilePath ch);
-          if b != 0
-          then do
+        EditExisting -> do
+          ch <- chooserApp
+          (s,b) <- deserializeSong (extractFilePath ch)
+          unless (b == 0) $ do
             i <- Interface.Editor.initSong s b
             (m,os,b) <- editor i
             serializeSongToSongFile (extractFilePath ch) os b
-          else return ();
-
           mainMenu
-        }
         
-        PlayFile -> do{
-          ch <- chooserApp;
-          (s,b) <- deserializeSong (extractFilePath ch);
-          if b != 0
-          then do
+        PlayFile -> do
+          ch <- chooserApp
+          (s,b) <- deserializeSong (extractFilePath ch)
+          unless (b == 0) $ do
             i <- Interface.Play.initSong s
             play i b
-          else return ();
-
           mainMenu
-        }
 
         Quit -> return ()
 
