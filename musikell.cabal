@@ -51,7 +51,7 @@ library
     , vty
   default-language: Haskell2010
 
-executable musikell
+executable musikell-exe
   main-is: Main.hs
   other-modules:
       Paths_musikell
@@ -64,15 +64,15 @@ executable musikell
     , base >=4.7 && <5
     , brick
     , bytestring
-    , musikell
     , directory
+    , musikell
     , sdl2
     , sdl2-mixer
     , text
     , vty
   default-language: Haskell2010
 
-test-suite musikell-test
+test-suite cse230-f21-project-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
@@ -86,8 +86,8 @@ test-suite musikell-test
     , base >=4.7 && <5
     , brick
     , bytestring
-    , musikell
     , directory
+    , musikell
     , sdl2
     , sdl2-mixer
     , text

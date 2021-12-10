@@ -10,31 +10,25 @@ import Data.ByteString.Lazy.Char8 as BC
 
 
 
-readFromSongFile :: FilePath -> IO ByteString 
+readFromSongFile :: FilePath -> Maybe ByteString 
 readFromSongFile fileName = do{
     checkFile <- doesFileExist fileName;
     if checkFile
-    then BC.readFile fileName
-    else error "error in SongFile.readFromSongFile: file given by argument does not exist"
+    then Just (BC.readFile fileName)
+    else Nothing
 }
 
 checkDecodeErrors :: Maybe (Song, Int) -> (Song, Int)
-checkDecodeErrors Nothing = error "error in SongFile.checkDecodeErrors: argument was Nothing"
+checkDecodeErrors Nothing = (emptySong, 0)
 checkDecodeErrors (Just (song, bpm)) = (song, bpm)
 
 deserializeSong :: FilePath -> IO (Song, Int)
 deserializeSong fileName = do{
     songBytes <- readFromSongFile fileName;
-    return (checkDecodeErrors (decode songBytes))
+    case songBytes of
+        Just -> return (checkDecodeErrors (decode songBytes))
+        Nothing -> return (emptySong, 0)
 }
 
 serializeSongToSongFile :: FilePath -> Song -> Int -> IO ()
-serializeSongToSongFile fileName song bpm = do{
-    -- checkFile <- doesFileExist fileName;
-    -- if checkFile 
-    -- then BC.writeFile fileName (encode song) 
-    -- else error "error in SongFile.serializeSongToSongFile: checkFile was False"
-    BC.writeFile fileName (encode (goToBeginning song, bpm)) 
-}
-
-makeNewSongFile = error ""
+serializeSongToSongFile fileName song bpm = BC.writeFile fileName (encode (goToBeginning song, bpm)) 

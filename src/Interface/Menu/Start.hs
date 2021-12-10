@@ -94,17 +94,25 @@ mainMenu = do
         EditExisting -> do{
           ch <- chooserApp;
           (s,b) <- deserializeSong (extractFilePath ch);
-          i <- Interface.Editor.initSong s b;
-          (m,os,b) <- editor i;
-          serializeSongToSongFile (extractFilePath ch) os b;
+          if b != 0
+          then do
+            i <- Interface.Editor.initSong s b
+            (m,os,b) <- editor i
+            serializeSongToSongFile (extractFilePath ch) os b
+          else return ();
+
           mainMenu
         }
         
         PlayFile -> do{
           ch <- chooserApp;
           (s,b) <- deserializeSong (extractFilePath ch);
-          i <- Interface.Play.initSong s;
-          play i b;
+          if b != 0
+          then do
+            i <- Interface.Play.initSong s
+            play i b
+          else return ();
+
           mainMenu
         }
 
