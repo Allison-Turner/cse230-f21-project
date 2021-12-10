@@ -31,7 +31,7 @@ import Brick.Types
 import Brick.BChan
 
 -- | Define how each part of the MusicFrame should look
-attributeMap :: Song -> AttrMap
+attributeMap :: (Song, PlayMode) -> AttrMap
 attributeMap _ = attrMap V.defAttr [
          (currentNoteAttr, Interface.UI.white `Brick.on` (bkgColor) `V.withStyle` V.bold)
        , (prevNotesAttr, Interface.UI.darkgrey `Brick.on` Interface.UI.black)
@@ -43,42 +43,46 @@ bkgColor = Interface.UI.grey
 
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget
-drawSong :: Song -> [Widget Name]
-drawSong song = [drawPattern song <=> drawStaff]
+drawSong :: (Song, PlayMode) -> [Widget Name]
+drawSong (song, _) = [drawPattern song <=> drawStaff]
 
-
+data PlayMode = Pause | Resume deriving (Show, Eq)
 
 -- | TODO: handle keyboard commands for pause, exit, etc
-handleEvent :: Song -> BrickEvent Name Beat -> EventM Name (Next Song)
-handleEvent song (AppEvent Beat) = step song
-handleEvent song (VtyEvent (EvKey KEsc [])) = do 
+handleEvent :: (Song, PlayMode) -> BrickEvent Name Beat -> EventM Name (Next (Song, PlayMode))
+handleEvent (song, m) (AppEvent Beat) = step (song, m)
+handleEvent (song, _) (VtyEvent (EvKey KEsc [])) = do 
   liftIO (closeTheChannel)
-  halt song
---handleEvent song (VtyEvent (EvKey (KChar ' ') [])) = halt song
-handleEvent song _               = continue song
+  halt (song, Resume)
+handleEvent (song, Pause) (VtyEvent (EvKey (KChar ' ') []))  = continue (song, Resume)
+handleEvent (song, Resume) (VtyEvent (EvKey (KChar ' ') [])) = continue (song, Pause)
+handleEvent (song, m) _               = continue (song, m)
 
 
 
 -- | Advance through Song until none left, then halt
-step :: Song -> EventM Name (Next Song)
-step s = let s1 = forwardOneNote s in case s1 of
+step :: (Song, PlayMode) -> EventM Name (Next (Song, PlayMode))
+step (s, Pause)  = do
+  liftIO (closeTheChannel)
+  continue (s, Pause)
+step (s, Resume) = let s1 = forwardOneNote s in case s1 of
        Nothing -> do
          liftIO (closeTheChannel)
-         halt s
+         halt (s, Resume)
        Just s1 -> do 
          liftIO (playNote (currentNote s1))
-         continue s1
+         continue (s1, Resume)
 
 
 
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
 initSong :: Song -> IO Song
-initSong s = return s 
+initSong s = return s
 
 
 
-app :: App Song Beat Name
+app :: App (Song, PlayMode) Beat Name
 app = App
   { appDraw         = drawSong
   , appChooseCursor = neverShowCursor
@@ -99,7 +103,7 @@ play s bpm = do
     writeBChan chan Beat
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
-  void $ customMain initialVty builder (Just chan) app s
+  void $ customMain initialVty builder (Just chan) app (s, Resume)
 
 
 bpmToMicrosecondDelay :: Int -> Int
