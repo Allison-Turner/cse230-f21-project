@@ -1,5 +1,5 @@
 -- | Helper function for making sounds
-module Audio (initAudio, closeAudio, playNote, closeTheChannel) where
+module Audio (initAudio, closeAudio, playNote, brieflyPlayNote, closeTheChannel) where
 
 import Tracker.Song (Pitch(..), Note(Note, Rest))
 
@@ -80,6 +80,10 @@ notPlaying :: Mixer.Chunk
         }
       return $ Mixer.Chunk rawChunk
 
+noteToChunk :: Note -> Mixer.Chunk
+noteToChunk Rest = notPlaying
+noteToChunk (Note p) = thePitches ! p
+
 -- | A function  to be called from main
 initAudio :: IO ()
 initAudio = do
@@ -103,8 +107,12 @@ playChunk ch = do
   unless (oldChunk == Just ch) $ void $ Mixer.playOn theChannel Mixer.Forever ch
 
 playNote :: Note -> IO ()
-playNote Rest = playChunk notPlaying
-playNote (Note p) = playChunk $ thePitches ! p
+playNote = playChunk . noteToChunk
+
+brieflyPlayNote :: Note -> IO ()
+brieflyPlayNote n = do
+  Mixer.playOn theChannel Mixer.Forever (noteToChunk n)
+  Mixer.fadeOut 200 theChannel
 
 closeTheChannel :: IO ()
 closeTheChannel = Mixer.pause theChannel
