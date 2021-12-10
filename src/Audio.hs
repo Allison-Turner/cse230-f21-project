@@ -27,7 +27,7 @@ notPlaying :: Mixer.Chunk
   where
     -- Frequency 1, RMS amplitude 1 sound
     waveform :: Double -> Double
-    waveform = sinWave
+    waveform = square
       where sawtooth x = 2 * sqrt 3 * (x - fromInteger (round x))
             sinWave x = sqrt 2 * sin (2 * pi * x)
             square x = if fromInteger (round x) > x then 1 else -1

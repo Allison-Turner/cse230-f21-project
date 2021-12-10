@@ -77,21 +77,23 @@ bkgColor Visual = Interface.UI.grey
 
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget
-drawSong :: (Interface.Editor.Mode, Song) -> [Widget Name]
-drawSong (_, song) = [drawPattern song <=> drawStaff]
+drawSong :: (Interface.Editor.Mode, Song, Int) -> [Widget Name]
+drawSong (_, song, bpm) = [drawPattern song <=> drawStaff <=> str ("Tempo: " ++ show bpm)]
 
 
 
-handleEvent :: (Interface.Editor.Mode, Song) -> BrickEvent Name Beat -> EventM Name (Next (Interface.Editor.Mode, Song))
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'i') [])) = continue (Insert, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'I') [])) = continue (Insert, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'r') [])) = continue (Replace, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'R') [])) = continue (Replace, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'v') [])) = continue (Visual, song)
-handleEvent (_, song) e@(VtyEvent (EvKey (KChar 'V') [])) = continue (Visual, song)
-handleEvent (m, song) e@(VtyEvent (EvKey KEsc [])) = halt (m, song)
-handleEvent (m, song) e@(VtyEvent (EvKey _ [])) = continue (m, (editSong song m e))
-handleEvent (m, song) _               = continue (m, song)
+handleEvent :: (Interface.Editor.Mode, Song, Int) -> BrickEvent Name Beat -> EventM Name (Next (Interface.Editor.Mode, Song, Int))
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'i') [])) = continue (Insert, song, b)
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'I') [])) = continue (Insert, song, b)
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'r') [])) = continue (Replace, song, b)
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'R') [])) = continue (Replace, song, b)
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'v') [])) = continue (Visual, song, b)
+handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'V') [])) = continue (Visual, song, b)
+handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '+') [])) = continue (m, song, b + 4)
+handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '-') [])) = continue (m, song, b - 4)
+handleEvent (m, song, b) e@(VtyEvent (EvKey KEsc [])) = halt (m, song, b)
+handleEvent (m, song, b) e@(VtyEvent (EvKey _ [])) = continue (m, (editSong song m e), b)
+handleEvent (m, song, b) _               = continue (m, song, b)
 
 
 
@@ -117,19 +119,19 @@ editSong s _ _ = s
 
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
-initSong :: Song -> IO (Interface.Editor.Mode, Song)
-initSong s = return (Visual, s)
+initSong :: Song -> Int -> IO (Interface.Editor.Mode, Song, Int)
+initSong s b = return (Visual, s, b)
 
-app :: App (Interface.Editor.Mode, Song) Beat Name
+app :: App (Interface.Editor.Mode, Song, Int) Beat Name
 app = App
   { appDraw         = Interface.Editor.drawSong
   , appChooseCursor = neverShowCursor
   , appHandleEvent  = handleEvent
   , appStartEvent   = return
-  , appAttrMap      = Interface.Editor.attributeMap
+  , appAttrMap      = \(m, s, bpm) -> Interface.Editor.attributeMap (m,s)
   }
 
 
 
-editor :: (Interface.Editor.Mode, Song) -> IO (Interface.Editor.Mode, Song)
+editor :: (Interface.Editor.Mode, Song, Int) -> IO (Interface.Editor.Mode, Song, Int)
 editor = defaultMain app

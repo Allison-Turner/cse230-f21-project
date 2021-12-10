@@ -13,6 +13,20 @@ import Audio
 import Graphics.Vty as V
 
 import Brick
+    ( (<=>),
+      Widget,
+      AttrMap,
+      attrMap,
+      continue,
+      customMain,
+      halt,
+      neverShowCursor,
+      fg,
+      on,
+      App(..),
+      EventM,
+      BrickEvent(AppEvent),
+      Next )
 import Brick.Types
 import Brick.BChan
 
@@ -72,13 +86,17 @@ app = App
 
 
 -- | This structure taken from tutorial at https://github.com/samtay/snake/blob/master/src/UI.hs
-play :: Song -> IO ()
-play s = do
+play :: Song -> Int -> IO ()
+play s bpm = do
   playNote (currentNote s)  -- funky off-by-one error otherwise
   chan <- newBChan 10
   forkIO $ forever $ do
-    threadDelay 1000000 -- decides how fast the song moves - TODO: tie this to audio bpm
+    threadDelay (bpmToMicrosecondDelay bpm) -- decides how fast the song moves - TODO: tie this to audio bpm
     writeBChan chan Beat
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
   void $ customMain initialVty builder (Just chan) app s
+
+
+bpmToMicrosecondDelay :: Int -> Int
+bpmToMicrosecondDelay = (60000000 `div`)

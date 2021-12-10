@@ -32,7 +32,7 @@ import Tracker.Song
 
 
 
-data Choice = WriteNew | EditExisting | PlayFile | Start deriving Show
+data Choice = WriteNew | EditExisting | PlayFile | Quit | Start deriving Show
 
 
 
@@ -42,7 +42,8 @@ drawMenu d = [C.hCenter $ padAll 1 (str "Terminal Tracker Menu"<=> hBorder <=> d
 drawStartMenu :: Widget n
 drawStartMenu = vBox [str "Start writing in a new Song file <W>",
                       str "Choose a Song file to edit <E>",
-                      str "Choose a Song file to play <R>"
+                      str "Choose a Song file to play <R>",
+                      str "Quit <Q>"
                      ]
 
 
@@ -55,6 +56,7 @@ appEvent d (VtyEvent ev) =
         V.EvKey (V.KChar 'w') [] -> M.halt WriteNew
         V.EvKey (V.KChar 'e') [] -> M.halt EditExisting
         V.EvKey (V.KChar 'r') [] -> M.halt PlayFile
+        V.EvKey (V.KChar 'q') [] -> M.halt Quit
         _                        -> M.continue d
 appEvent d _ = M.continue d
 
@@ -83,25 +85,30 @@ mainMenu = do
 
         WriteNew -> do{
           s <- return emptySong;
-          i <- Interface.Editor.initSong s;
-          out <- editor i;
-          serializeSongToSongFile "./output.jsong" (snd out)
+          i <- Interface.Editor.initSong s 120;
+          (m,os,b) <- editor i;
+          serializeSongToSongFile "./output.jsong" os b;
+          mainMenu
         }
 
         EditExisting -> do{
           ch <- chooserApp;
-          s <- deserializeSong (extractFilePath ch);
-          i <- Interface.Editor.initSong s;
-          out <- editor i;
-          serializeSongToSongFile (extractFilePath ch) (snd out)
+          (s,b) <- deserializeSong (extractFilePath ch);
+          i <- Interface.Editor.initSong s b;
+          (m,os,b) <- editor i;
+          serializeSongToSongFile (extractFilePath ch) os b;
+          mainMenu
         }
         
         PlayFile -> do{
           ch <- chooserApp;
-          s <- deserializeSong (extractFilePath ch);
+          (s,b) <- deserializeSong (extractFilePath ch);
           i <- Interface.Play.initSong s;
-          play i
+          play i b;
+          mainMenu
         }
+
+        Quit -> return ()
 
 extractFilePath :: FB.FileBrowser n -> FilePath
 extractFilePath fb = fileInfoFilePath (head (FB.fileBrowserSelection fb))
