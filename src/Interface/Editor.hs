@@ -25,22 +25,14 @@ import Graphics.Vty as V
 data Mode = Insert | Replace | Visual deriving (Show, Eq, Ord)
 
 toNote :: Char -> Maybe Note
-toNote 'c' = Just (Note C)
-toNote 'C' = Just (Note C)
-toNote 'd' = Just (Note D)
-toNote 'D' = Just (Note D)
-toNote 'e' = Just (Note E)
-toNote 'E' = Just (Note E)
-toNote 'f' = Just (Note F)
-toNote 'F' = Just (Note F)
-toNote 'g' = Just (Note G)
-toNote 'G' = Just (Note G)
-toNote 'a' = Just (Note A)
-toNote 'A' = Just (Note A)
-toNote 'b' = Just (Note B)
-toNote 'B' = Just (Note B)
-toNote 's' = Just (Note C') 
-toNote 'S' = Just (Note C')
+toNote 'q' = Just (Note 60)
+toNote 'w' = Just (Note 62)
+toNote 'e' = Just (Note 64)
+toNote 'r' = Just (Note 65)
+toNote 't' = Just (Note 67)
+toNote 'y' = Just (Note 69)
+toNote 'u' = Just (Note 71)
+toNote 'i' = Just (Note 72) 
 toNote ' ' = Just (Rest)
 toNote _   = Nothing
 
@@ -65,11 +57,8 @@ drawSong (_, song, bpm) = [drawPattern song <=> drawStaff <=> str ("Tempo: " ++ 
 
 
 handleEvent :: (Interface.Editor.Mode, Song, Int) -> BrickEvent Name Beat -> EventM Name (Next (Interface.Editor.Mode, Song, Int))
-handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'i') [])) = continue (Insert, song, b)
 handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'I') [])) = continue (Insert, song, b)
-handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'r') [])) = continue (Replace, song, b)
 handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'R') [])) = continue (Replace, song, b)
-handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'v') [])) = continue (Visual, song, b)
 handleEvent (_, song, b) e@(VtyEvent (EvKey (KChar 'V') [])) = continue (Visual, song, b)
 handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '+') [])) = continue (m, song, b + 4)
 handleEvent (m, song, b) e@(VtyEvent (EvKey (KChar '-') [])) = continue (m, song, b - 4)

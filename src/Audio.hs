@@ -1,3 +1,5 @@
+{-# LANGUAGE BangPatterns #-}
+
 -- | Helper function for making sounds
 module Audio (initAudio, closeAudio, playNote, brieflyPlayNote, closeTheChannel) where
 
@@ -24,7 +26,7 @@ audioConfig = Mixer.Audio
 thePitches :: Array Pitch Mixer.Chunk
 notPlaying :: Mixer.Chunk
 (thePitches, notPlaying) =
-  (array (minBound, maxBound) [(p, pitch p) | p <- [minBound..maxBound]], zeroSound)
+  (array (minBound, maxBound) [(p,chunk) | p <- [minBound..maxBound], let !chunk = pitch p], zeroSound)
   where
     -- Frequency 1, RMS amplitude 1 sound
     waveform :: Double -> Double

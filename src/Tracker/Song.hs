@@ -7,11 +7,8 @@ import Data.Aeson.TH
 import GHC.Generics
 import Data.Ix (Ix)
 
--- | A pitch
---
--- TODO: represent more pitches. For now, a single octave is fine.
-data Pitch = C | D | E | F | G | A | B | C'
-           deriving (Show, Eq, Ord, Enum, Bounded, Ix)
+-- | A pitch, encoded MIDI-style (A4 is 69)
+type Pitch = Int
 
 data Note = Note Pitch | Rest
           deriving (Show, Eq, Ord)
@@ -47,7 +44,6 @@ goToBeginning song = song
 
 
 -- for JSON serialization and deserialization
-$(deriveJSON defaultOptions ''Pitch)
 $(deriveJSON defaultOptions ''Note)
 $(deriveJSON defaultOptions ''Song)
 
