@@ -1,4 +1,8 @@
-# CSE230 Final Project (Fall 2021)
+
+# Musikell
+Musikell, a terminal-based music editor and player written in Haskell.
+
+## CSE230 Final Project (Fall 2021)
 
 We will be beginning development of a [fantasy console](https://en.wikipedia.org/wiki/Fantasy_video_game_console) written in Haskell. Our current design won't have strict emulated hardware constraints, but that might change during development. 
 
