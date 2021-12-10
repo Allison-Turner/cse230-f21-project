@@ -1,5 +1,5 @@
 -- | Helper function for making sounds
-module Audio (initAudio, closeAudio, shutUp, playNote, closeTheChannel) where
+module Audio (initAudio, closeAudio, playNote, closeTheChannel) where
 
 import Tracker.Song (Pitch(..), Note(Note, Rest))
 
@@ -7,6 +7,7 @@ import System.IO.Unsafe (unsafePerformIO)
 import Data.Array
 import Data.List
 import Data.Functor
+import Control.Monad
 import GHC.Word
 import qualified SDL.Init
 import qualified SDL.Mixer as Mixer
@@ -66,7 +67,7 @@ notPlaying :: Mixer.Chunk
     zeroSound :: Mixer.Chunk
     zeroSound = unsafePerformIO
         $ soundDataToChunk (fromIntegral sampleCount)
-        $ replicate sampleCount 0
+        $ replicate sampleCount 128
       where sampleCount = sampleRate `div` 10
 
     soundDataToChunk sampleCount list = do
@@ -96,15 +97,14 @@ closeAudio = Mixer.closeAudio
 theChannel :: Mixer.Channel
 theChannel = 0
 
-shutUp :: IO ()
-shutUp = void $ Mixer.playOn theChannel Mixer.Forever notPlaying
-
-playPitch :: Pitch -> IO ()
-playPitch p = void $ Mixer.playOn theChannel Mixer.Forever $ thePitches ! p
+playChunk :: Mixer.Chunk -> IO ()
+playChunk ch = do
+  oldChunk <- Mixer.playedLast theChannel
+  unless (oldChunk == Just ch) $ void $ Mixer.playOn theChannel Mixer.Forever ch
 
 playNote :: Note -> IO ()
-playNote Rest = shutUp
-playNote (Note p) = playPitch p
+playNote Rest = playChunk notPlaying
+playNote (Note p) = playChunk $ thePitches ! p
 
 closeTheChannel :: IO ()
 closeTheChannel = Mixer.pause theChannel
