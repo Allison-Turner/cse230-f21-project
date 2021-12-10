@@ -54,7 +54,7 @@ handleEvent song (AppEvent Beat) = step song
 handleEvent song (VtyEvent (EvKey KEsc [])) = do 
   liftIO (closeTheChannel)
   halt song
-handleEvent song (VtyEvent (EvKey KEsc [])) = halt song
+--handleEvent song (VtyEvent (EvKey (KChar ' ') [])) = halt song
 handleEvent song _               = continue song
 
 

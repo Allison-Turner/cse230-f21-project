@@ -21,46 +21,25 @@ import Graphics.Vty as V
 
 data Mode = Insert | Replace | Visual deriving (Show, Eq, Ord)
 
-validKey :: Char -> Bool 
-validKey 'c' = True
-validKey 'C' = True
-validKey 'd' = True
-validKey 'D' = True
-validKey 'e' = True
-validKey 'E' = True
-validKey 'f' = True
-validKey 'F' = True
-validKey 'g' = True
-validKey 'G' = True
-validKey 'a' = True
-validKey 'A' = True
-validKey 'b' = True
-validKey 'B' = True
-validKey 's' = True
-validKey 'S' = True
-validKey ' ' = True
-validKey _   = False
-
-
-toNote :: Char -> Note
-toNote 'c' = Note C
-toNote 'C' = Note C
-toNote 'd' = Note D
-toNote 'D' = Note D
-toNote 'e' = Note E
-toNote 'E' = Note E
-toNote 'f' = Note F
-toNote 'F' = Note F
-toNote 'g' = Note G
-toNote 'G' = Note G
-toNote 'a' = Note A
-toNote 'A' = Note A
-toNote 'b' = Note B
-toNote 'B' = Note B
-toNote 's' = Note C' 
-toNote 'S' = Note C'
-toNote ' ' = Rest
-toNote _   = Rest
+toNote :: Char -> Maybe Note
+toNote 'c' = Just (Note C)
+toNote 'C' = Just (Note C)
+toNote 'd' = Just (Note D)
+toNote 'D' = Just (Note D)
+toNote 'e' = Just (Note E)
+toNote 'E' = Just (Note E)
+toNote 'f' = Just (Note F)
+toNote 'F' = Just (Note F)
+toNote 'g' = Just (Note G)
+toNote 'G' = Just (Note G)
+toNote 'a' = Just (Note A)
+toNote 'A' = Just (Note A)
+toNote 'b' = Just (Note B)
+toNote 'B' = Just (Note B)
+toNote 's' = Just (Note C') 
+toNote 'S' = Just (Note C')
+toNote ' ' = Just (Rest)
+toNote _   = Nothing
 
 -- | Define how each part of the MusicFrame should look
 attributeMap :: (Interface.Editor.Mode, Song) -> AttrMap
@@ -110,8 +89,12 @@ editSong s _ (VtyEvent (EvKey KDel []))  = case deleteNote s of
 editSong s _ (VtyEvent (EvKey KBS []))   = case deleteNote' s of
     Just song -> song 
     Nothing   -> s
-editSong s@(Song prev curr next) Insert  (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song (curr:prev) (toNote c) next else s
-editSong s@(Song prev curr next) Replace (VtyEvent (EvKey (KChar c) [])) = if validKey c then Song prev (toNote c) next else s
+editSong s@(Song prev curr next) Insert  (VtyEvent (EvKey (KChar c) [])) = case toNote c of 
+    Just note -> Song (curr:prev) note next 
+    Nothing   -> s
+editSong s@(Song prev curr next) Replace (VtyEvent (EvKey (KChar c) [])) = case toNote c of
+    Just note -> Song prev note next 
+    Nothing   -> s
 editSong s@(Song prev curr next) Visual  (VtyEvent (EvKey (KChar c) [])) = s
 editSong s _ _ = s
 
