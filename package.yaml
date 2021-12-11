@@ -30,6 +30,7 @@ dependencies:
 - array
 - sdl2
 - sdl2-mixer
+- QuickCheck
 
 library:
   source-dirs: src
