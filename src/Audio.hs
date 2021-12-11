@@ -3,7 +3,7 @@
 -- | Helper function for making sounds
 module Audio (initAudio, closeAudio, playNote, brieflyPlayNote, closeTheChannel) where
 
-import Tracker.Song (Pitch(..), Note(Note, Rest))
+import Tracker.Song (Note(Note, Rest))
 
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Array
@@ -26,7 +26,7 @@ audioConfig = Mixer.Audio
 thePitches :: Array Pitch Mixer.Chunk
 notPlaying :: Mixer.Chunk
 (thePitches, notPlaying) =
-  (array (minBound, maxBound) [(p,chunk) | p <- [minBound..maxBound], let !chunk = pitch p], zeroSound)
+  (array (minBound, maxBound) [(p,chunk) | p <- [0..127], let !chunk = pitch p], zeroSound)
   where
     -- Frequency 1, RMS amplitude 1 sound
     waveform :: Double -> Double
@@ -41,23 +41,13 @@ notPlaying :: Mixer.Chunk
     -- guaranteed the settings we asked for
     sampleRate = Mixer.audioFrequency audioConfig
 
-    semitone p = case p of
-      C -> 0
-      D -> 2
-      E -> 4
-      F -> 5
-      G -> 7
-      A -> 9
-      B -> 11
-      C' -> 12
-
     pitch :: Pitch -> Mixer.Chunk
     pitch p = unsafePerformIO
         $ soundDataToChunk sampleCount
         $ map f [1..sampleCount]
       where
         freq, period :: Double
-        freq = (440 * 2 ** ((semitone p - semitone A) / 12)) / 2
+        freq = 440 * 2 ** ((fromIntegral p - 69) / 12)
         period = fromIntegral sampleRate / freq
         -- round 1 second to nearest number of periods
         sampleCount = round $ period * fromIntegral (round freq)
