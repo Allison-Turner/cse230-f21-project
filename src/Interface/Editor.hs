@@ -26,9 +26,11 @@ import Graphics.Vty as V
 data Mode = Insert | Replace | Visual deriving (Show, Eq, Ord)
 
 toNote :: Char -> Int -> Maybe Note
-toNote c oct = case elemIndex c "q2w3er5t6y7ui" of
+toNote c oct = case elemIndex c "zsxdcvgbhnjm,l." of
   Just n -> Just (Note (Pitch (12 * oct + n)))
-  Nothing -> if c == ' ' then Just Rest else Nothing
+  Nothing -> case elemIndex c "q2w3er5t6y7ui9o0p[" of
+    Just n -> Just (Note (Pitch (12 * (oct+1) + n)))
+    Nothing -> if c == ' ' then Just Rest else Nothing
 
 
 -- | Define how each part of the MusicFrame should look

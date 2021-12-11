@@ -103,6 +103,7 @@ playNote = playChunk . noteToChunk
 
 brieflyPlayNote :: Note -> IO ()
 brieflyPlayNote n = do
+  Mixer.setVolume 127 theChannel
   Mixer.playOn theChannel Mixer.Forever (noteToChunk n)
   Mixer.fadeOut 200 theChannel
 
