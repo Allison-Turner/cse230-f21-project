@@ -38,16 +38,17 @@ staffAttr       = attrName "staffAttr"
 -- | Draw a single Note, aligned with the "staff" at the bottom of the screen
 drawNote :: Note -> Widget n
 drawNote n =
-    let totalLines = 1 + fromEnum (maxBound :: Pitch)
+    let totalLines = 9
     in hCenter $ hBox $ map (hCenter . str) $ case n of
         Note pitch ->
-            let idx = fromEnum pitch
-            in replicate idx pipe ++ [show pitch] ++ replicate (totalLines - idx - 1) pipe
+            -- replicate (fromIntegral $ pitch - 60) pipe ++ [show pitch] ++ replicate (totalLines - idx - 1) pipe
+            replicate oct pipe ++ [show pitch] ++ replicate (8 - oct) pipe
+                where oct = getOctave pitch
         Rest -> replicate totalLines pipe
 
 -- | Draw each Note that makes up a Song in order
 drawPattern :: Song -> Widget n
-drawPattern s = vBox (map (withAttr prevNotesAttr . drawNote) (reverse (prevNotes s))) <=> 
+drawPattern s = vBox (map (withAttr prevNotesAttr . drawNote) (reverse (take 13 (prevNotes s)))) <=> 
                 vBox [ (withAttr currentNoteAttr . drawNote) (currentNote s) ] <=> 
                 vBox (map (withAttr nextNotesAttr . drawNote) (nextNotes s))
 
@@ -56,5 +57,5 @@ drawPattern s = vBox (map (withAttr prevNotesAttr . drawNote) (reverse (prevNote
 drawStaff :: Widget n
 drawStaff = 
     vBox [ hBorder 
-         , hCenter $ hBox $ map (hCenter . str . show) [minBound..maxBound :: Pitch] ] & withAttr staffAttr
+         , hCenter $ hBox $ map (hCenter . str . show) [0 .. 8] ] & withAttr staffAttr
 

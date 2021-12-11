@@ -1,17 +1,24 @@
-{-# LANGUAGE StrictData, TemplateHaskell #-}
+{-# LANGUAGE StrictData, TemplateHaskell, DerivingStrategies, DerivingVia #-}
 
 -- | The 'Song' data type, and helper functions for working on it
 module Tracker.Song where
 
 import Data.Aeson.TH
+import Data.Aeson
 import GHC.Generics
 import Data.Ix (Ix)
 
 -- | A pitch, encoded MIDI-style (A4 is 69)
-type Pitch = Int
+newtype Pitch = Pitch Int deriving (Eq, Ord, Num, Real, Enum, Ix, Integral, ToJSON, FromJSON) via Int
+
+instance Show Pitch where
+  show p = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"] !! (fromIntegral p `mod` 12)
 
 data Note = Note Pitch | Rest
           deriving (Show, Eq, Ord)
+
+getOctave :: Pitch -> Int
+getOctave p = fromIntegral p `div` 12
 
 -- | A song is a sequence of notes, represented with a zipper.
 data Song = Song

@@ -81,20 +81,20 @@ mainMenu = do
     case d of
         Start -> mainMenu
 
-        WriteNew -> do{
-          s <- return emptySong;
-          i <- Interface.Editor.initSong s 120;
-          (m,os,b) <- editor i;
-          serializeSongToSongFile "./output.jsong" os b;
+        WriteNew -> do
+          let s = do emptySong
+          let o = 4
+          i <- Interface.Editor.initSong s 120 4
+          (m,os,b,o) <- editor i
+          serializeSongToSongFile "./output.jsong" os b
           mainMenu
-        }
 
         EditExisting -> do
           ch <- chooserApp
           (s,b) <- deserializeSong (extractFilePath ch)
           unless (b == 0) $ do
-            i <- Interface.Editor.initSong s b
-            (m,os,b) <- editor i
+            i <- Interface.Editor.initSong s b 4
+            (m,os,b,o) <- editor i
             serializeSongToSongFile (extractFilePath ch) os b
           mainMenu
         

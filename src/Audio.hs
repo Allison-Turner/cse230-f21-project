@@ -26,7 +26,7 @@ audioConfig = Mixer.Audio
 thePitches :: Array Pitch Mixer.Chunk
 notPlaying :: Mixer.Chunk
 (thePitches, notPlaying) =
-  (array (minBound, maxBound) [(p,chunk) | p <- [0..127], let !chunk = pitch p], zeroSound)
+  (array (0,127) [(p,chunk) | p <- [0..127], let !chunk = pitch p], zeroSound)
   where
     -- Frequency 1, RMS amplitude 1 sound
     waveform :: Double -> Double
