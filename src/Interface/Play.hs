@@ -21,6 +21,7 @@ import Brick
       customMain,
       halt,
       neverShowCursor,
+      str,
       fg,
       on,
       App(..),
@@ -44,7 +45,7 @@ bkgColor = Interface.UI.grey
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget
 drawSong :: (Song, PlayMode) -> [Widget Name]
-drawSong (song, _) = [drawPattern song <=> drawStaff]
+drawSong (song, _) = [drawPattern song <=> drawStaff <=> str "Space: pause/continue the song\nEsc: quit player"]
 
 data PlayMode = Pause | Resume deriving (Show, Eq)
 
