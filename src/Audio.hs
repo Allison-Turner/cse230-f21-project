@@ -3,7 +3,7 @@
 -- | Helper function for making sounds
 module Audio (initAudio, closeAudio, playNote, brieflyPlayNote, closeTheChannel) where
 
-import Tracker.Song (Note(Note, Rest))
+import Tracker.Song (Pitch, Note(Note, Rest))
 
 import System.IO.Unsafe (unsafePerformIO)
 import Data.Array

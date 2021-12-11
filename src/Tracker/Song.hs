@@ -50,7 +50,7 @@ $(deriveJSON defaultOptions ''Song)
 
 exampleSong :: Song
 exampleSong = Song [] curr next
-  where curr:next = map Note [D,E,F,G,E,E,C,D]
+  where curr:next = map Note [62,64,65,67,64,64,60,62]
 
 emptySong :: Song
 emptySong = Song [] Rest []
