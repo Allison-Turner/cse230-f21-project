@@ -49,7 +49,8 @@ bkgColor Visual = Interface.UI.grey
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget
 drawSong :: (Interface.Editor.Mode, Song, Int, Int) -> [Widget Name]
-drawSong (_, song, bpm, oct) = [drawPattern song <=> drawStaff <=> str ("Tempo: " ++ show bpm) <=> str ("Octave: " ++ show oct)]
+drawSong (_, song, bpm, oct) = [drawPattern song <=> drawStaff <=> str ("Tempo: " ++ show bpm) <=> str ("Octave: " ++ show oct)
+    <=> str "I: insert mode\nR: replace mode\nV: visual mode\n+: increase bpm\n-: decrease bpm\nUp/Down or scroll: nevigate through the song\nDel: remove note and go to the next one\nBackspace: remove note and go to the previous one\nSpace: rest note\nEsc: quit editor"]
 
 
 

@@ -23,6 +23,7 @@ import Brick
       neverShowCursor,
       fg,
       on,
+      str,
       App(..),
       EventM,
       BrickEvent(AppEvent),
@@ -33,7 +34,7 @@ import Brick.BChan
 -- | Define how each part of the MusicFrame should look
 attributeMap :: (Song, PlayMode) -> AttrMap
 attributeMap _ = attrMap V.defAttr [
-         (currentNoteAttr, Interface.UI.white `Brick.on` (bkgColor) `V.withStyle` V.bold)
+         (currentNoteAttr, Interface.UI.white `Brick.on` bkgColor `V.withStyle` V.bold)
        , (prevNotesAttr, Interface.UI.darkgrey `Brick.on` Interface.UI.black)
        , (nextNotesAttr, Interface.UI.grey `Brick.on` Interface.UI.black)
        , (staffAttr, fg Interface.UI.white)]
@@ -44,7 +45,7 @@ bkgColor = Interface.UI.grey
 -- | Drawing each part of the song display 
 -- | <=> puts drawPattern Widget on top of drawStaff Widget
 drawSong :: (Song, PlayMode) -> [Widget Name]
-drawSong (song, _) = [drawPattern song <=> drawStaff]
+drawSong (song, _) = [drawPattern song <=> drawStaff <=> str "Space: pause/continue the song\nEsc: quit player"]
 
 data PlayMode = Pause | Resume deriving (Show, Eq)
 
@@ -78,7 +79,7 @@ step (s, Resume) = let s1 = forwardOneNote s in case s1 of
 -- | this is where we point the UI at the Song that we want to display
 -- | TODO: plug in real control structures for file system and terminal input
 initSong :: Song -> IO Song
-initSong s = return s
+initSong = return
 
 
 
@@ -99,7 +100,7 @@ play s bpm = do
   playNote (currentNote s)  -- funky off-by-one error otherwise
   chan <- newBChan 10
   forkIO $ forever $ do
-    threadDelay (bpmToMicrosecondDelay bpm) -- decides how fast the song moves - TODO: tie this to audio bpm
+    threadDelay (bpmToMicrosecondDelay bpm)
     writeBChan chan Beat
   let builder = V.mkVty V.defaultConfig
   initialVty <- builder
